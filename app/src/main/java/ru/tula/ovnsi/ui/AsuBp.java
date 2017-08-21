@@ -60,6 +60,8 @@ public class AsuBp extends Activity {
 
         listView.setAdapter(boxAdapter);
 
+        System.out.println("********Count31 :0555 " );
+
 
         /*Toast toast =Toast.makeText(getApplicationContext(),extras.getString("addres"),Toast.LENGTH_SHORT);
         toast.show();*/
@@ -219,7 +221,7 @@ public class AsuBp extends Activity {
                             String num = category_list.getProperty("value2").toString();
                             String adr = category_list.getProperty("value4").toString();
                             //System.out.println("********Count1 : " + num);
-                            stringAddresList srtAdd = new stringAddresList(org, num, adr);
+                            stringAddresList srtAdd = new stringAddresList(num, org, adr);
                             retur.add(srtAdd);
                         }
                     }
@@ -241,11 +243,14 @@ public class AsuBp extends Activity {
                 test.clear();
                 for (stringAddresList a:res
                      ) {
-                    test.add(new stringAddresList(a.idBp, a.orgBp, a.addres));
+                    test.add(new stringAddresList(a.idBp,a.orgBp, a.addres));
                 }
+                System.out.println("********Count31 : " + test.get(0).idBp);
+                System.out.println("********Count32 : " + test.get(0).orgBp);
+                System.out.println("********Count33 : " + test.get(0).addres);
 
                 boxAdapter.notifyDataSetChanged();
-                System.out.println("********Count3 : " + test.get(0).idBp);
+
 
 
 
