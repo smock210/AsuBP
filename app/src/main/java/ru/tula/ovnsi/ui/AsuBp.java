@@ -12,6 +12,7 @@ import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,12 +48,17 @@ public class AsuBp extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_asu_bp);
         Bundle extras = getIntent().getExtras();
-        test.add(new stringAddresList("tula", "11", "home"));
+        //test.add(new stringAddresList("tula", "11", "home"));
         boxAdapter = new BoxAdapter(this, test);
         listView = (ListView) findViewById((R.id.listBP));
 
         param = extras.getString("addres");
-        new MyTask().execute();
+        /*ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar.setVisibility(ProgressBar.VISIBLE);*/
+        /*Toast tot = Toast.makeText(getApplicationContext(),param,Toast.LENGTH_SHORT);
+
+        tot.show();*/
+        new MyTask(this).execute();
 
 
 
@@ -60,7 +66,7 @@ public class AsuBp extends Activity {
 
         listView.setAdapter(boxAdapter);
 
-        System.out.println("********Count31 :0555 " );
+        //System.out.println("********Count31 :0555 " );
 
 
         /*Toast toast =Toast.makeText(getApplicationContext(),extras.getString("addres"),Toast.LENGTH_SHORT);
@@ -175,13 +181,27 @@ public class AsuBp extends Activity {
 
     public class MyTask extends AsyncTask<Void, Void, ArrayList<stringAddresList>> {
 
-        ProgressDialog progress;
+
         String response = "";
         ArrayList<stringAddresList> retur = new ArrayList<stringAddresList>();
 
-        public void onPreExecute() {
+        private ProgressDialog mProgressDialog;
+        private Context c;
 
+        public MyTask(Context c) {
+            this.c = c;
+            mProgressDialog = new ProgressDialog(c);
+        }
+
+        public void onPreExecute() {
             super.onPreExecute();
+
+            //mProgressDialog = new ProgressDialog(c);
+            mProgressDialog.setMessage("Поиск...");
+            mProgressDialog.setIndeterminate(true);
+            mProgressDialog.setCancelable(true);
+
+            mProgressDialog.show();
         }
 
         @Override
@@ -189,11 +209,13 @@ public class AsuBp extends Activity {
 
             final SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);
 
-            request.addProperty("adress", ""); // веб-сервис принимает один параметр text в виде строки
+
+            request.addProperty("adress", param); // веб-сервис принимает один параметр text в виде строки
 
             final SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
 
             envelope.setOutputSoapObject(request);
+
             envelope.dotNet = true;
 
             try {
@@ -201,7 +223,7 @@ public class AsuBp extends Activity {
                 List<HeaderProperty> headerList = new ArrayList<HeaderProperty>();
                 //headerList.add(new HeaderProperty("Authorization", "Basic " + org.kobjects.base64.Base64.encode("admin:123".getBytes()))); // авторизация на веб-сервисе
 
-                HttpTransportSE androidHttpTransport = new HttpTransportSE(URL);
+                HttpTransportSE androidHttpTransport = new HttpTransportSE(URL, 60000);
                 androidHttpTransport.call(SOAP_ACTION, envelope, headerList);
 
                 /*SoapObject result = (SoapObject) envelope.bodyIn;
@@ -229,8 +251,12 @@ public class AsuBp extends Activity {
 
             } catch (IOException e) {
                 response = e.toString();
+                //Toast.makeText(AsuBp.this, response, Toast.LENGTH_SHORT).show();
+                retur.add(new stringAddresList("","",response));
             } catch (XmlPullParserException e) {
                 response = e.toString();
+                retur.add(new stringAddresList("","",response));
+                //Toast.makeText(AsuBp.this, response, Toast.LENGTH_SHORT).show();
             }
             return retur;
         }
@@ -245,16 +271,13 @@ public class AsuBp extends Activity {
                      ) {
                     test.add(new stringAddresList(a.idBp,a.orgBp, a.addres));
                 }
-                System.out.println("********Count31 : " + test.get(0).idBp);
-                System.out.println("********Count32 : " + test.get(0).orgBp);
-                System.out.println("********Count33 : " + test.get(0).addres);
-
                 boxAdapter.notifyDataSetChanged();
 
-
-
-
-
+            } else {
+                Toast.makeText(AsuBp.this, "Подходящих подписок не найдено", Toast.LENGTH_SHORT).show();
+            }
+            if (mProgressDialog.isShowing()) {
+                mProgressDialog.dismiss();
             }
 
         }

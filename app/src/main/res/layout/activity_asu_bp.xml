@@ -11,7 +11,12 @@
         android:orientation="vertical">
         <TextView
             android:id="@+id/test1"
-            android:text="test1"
+            android:text="Найденные подписки"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:visibility="invisible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <ListView
@@ -24,12 +29,6 @@
             android:scrollbars="vertical">
 
         </ListView>
-        <TextView
-            android:id="@+id/test2"
-            android:text="test2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
 
     </LinearLayout>
 
